@@ -1103,7 +1103,7 @@ cdef class Polynomial_rational_flint(Polynomial):
         polynomial 1.  Note that this includes the case 0^0 == 1.
 
         This method only supports integral values for exp that fit into
-        a signed long int.
+        a signed long int (except when this is a constant polynomial).
 
         INPUT:
 
@@ -1154,7 +1154,31 @@ cdef class Polynomial_rational_flint(Polynomial):
             Traceback (most recent call last):
             ...
             RuntimeError: FLINT exception
+
+        If this polynomial is constant, hand over to the base ring
+        (:trac:`20086`)::
+
+            sage: P.<R> = QQ[]
+            sage: P(1)^(1/3)
+            1
+            sage: _.parent()
+            Univariate Polynomial Ring in R over Rational Field
+            sage: P(1/4)^(1/2)
+            1/2
+            sage: _.parent()
+            Univariate Polynomial Ring in R over Rational Field
+            sage: P(1/3)^(1/2)
+            sqrt(1/3)
+            sage: _.parent()
+            Symbolic Ring
         """
+        if fmpq_poly_degree(self.__poly) == 0:
+            result = self[0]**exp
+            try:
+                return self.parent()(result)
+            except TypeError:
+                return result
+
         cdef Polynomial_rational_flint res
 
         cdef long n = pyobject_to_long(exp)
