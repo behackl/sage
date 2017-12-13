@@ -1305,7 +1305,10 @@ class AsymptoticExpansion(CommutativeAlgebraElement):
             sage: 2*a # indirect doctest
             2*a
         """
-        if other.is_zero():
+        if hasattr(other, 'is_trivial_zero'):
+            if other.is_trivial_zero():
+                return self.parent().zero()
+        elif other.is_zero():
             return self.parent().zero()
 
         from .term_monoid import TermMonoid

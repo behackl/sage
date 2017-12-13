@@ -2671,7 +2671,13 @@ class TermWithCoefficient(GenericTerm):
         except (ValueError, TypeError):
             raise ValueError('%s is not a coefficient in %s.' %
                              (coefficient, parent))
-        if coefficient == 0:
+
+        if hasattr(coefficient, 'is_trivial_zero'):
+            if coefficient.is_trivial_zero():
+                raise ZeroCoefficientError(
+                    'Zero coefficient %s is not allowed in %s.' %
+                    (coefficient, parent))
+        elif coefficient == 0:
             raise ZeroCoefficientError(
                 'Zero coefficient %s is not allowed in %s.' %
                 (coefficient, parent))
@@ -3306,6 +3312,11 @@ class ExactTerm(TermWithCoefficient):
             ArithmeticError: x^5 cannot absorb 2*x^2
         """
         coeff_new = self.coefficient + other.coefficient
+        if hasattr(coeff_new, 'is_trivial_zero'):
+            if coeff_new.is_trivial_zero():
+                return None
+            else:
+                return self.parent()(self.growth, coeff_new)
         if coeff_new.is_zero():
             return None
         else:
