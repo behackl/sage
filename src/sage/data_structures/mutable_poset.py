@@ -206,6 +206,7 @@ class MutablePosetShell(SageObject):
         self._poset_ = poset
         self._element_ = element
         self._key_ = self.poset.get_key(element)
+        self._key_hash_ = hash(self._key_)
         self._predecessors_ = set()
         self._successors_ = set()
         super().__init__()
@@ -476,7 +477,7 @@ class MutablePosetShell(SageObject):
             sage: hash(MutablePosetShell(P, (1, 2))) == hash((1, 2))
             True
         """
-        return hash(self.key)
+        return self._key_hash_
 
     def le(self, other, reverse=False):
         r"""
