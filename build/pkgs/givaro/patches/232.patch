@@ -1,0 +1,14 @@
+https://bugs.gentoo.org/939096
+
+diff --git a/src/kernel/recint/rfiddling.h b/src/kernel/recint/rfiddling.h
+index 3865eb3b..3ea16e91 100644
+--- a/src/kernel/recint/rfiddling.h
++++ b/src/kernel/recint/rfiddling.h
+@@ -167,7 +167,7 @@ namespace RecInt
+     template <size_t K>
+     inline rint<K> rint<K>::maxFFLAS() {
+         rint<K> max;
+-        set_highest_bit(max.Low.Value);
++        set_highest_bit(max.Value.Low.Value);
+         return max;
+     }
